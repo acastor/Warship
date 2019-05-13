@@ -1,4 +1,4 @@
-type ship =
+type shipType =
   | Carrier
   | Battleship
   | Destroyer
@@ -30,3 +30,14 @@ type state = {
   aiBoard: board,
   gameState: gameState
 };
+
+type ship = {
+  mutable damage: int,
+  shipType: shipType,
+  mutable isSunk: bool,
+  shipLength: int,
+  // these shouldn't be mutable.. is there a way to not define them right away?
+  mutable coordinates: array((int, int))
+};
+
+type fleet = array(ship);
