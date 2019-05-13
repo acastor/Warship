@@ -7,6 +7,7 @@ function BoardTile(Props) {
   var x = Props.x;
   var y = Props.y;
   var tile = Props.tile;
+  Props.boardOwner;
   var tmp;
   switch (tile) {
     case 0 : 

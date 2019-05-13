@@ -1,7 +1,7 @@
 open SharedTypes;
 
 [@react.component]
-let make = (~row: row, ~index: int) => {
+let make = (~row: row, ~index: int, ~boardOwner: player) => {
   <div className="board-row">
     {row
      |> Array.mapi((ind: int, tile: boardTileState) => {
@@ -12,6 +12,7 @@ let make = (~row: row, ~index: int) => {
             x={string_of_int(index)}
             y={string_of_int(ind)}
             tile
+            boardOwner
           />;
         })
      |> ReasonReact.array}

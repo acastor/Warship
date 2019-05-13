@@ -1,7 +1,15 @@
 open SharedTypes;
 
+let getBoardNameClass = (~boardOwner: player) => {
+  let owner = switch(boardOwner) {
+    | Human => "player"
+    | AI => "ai"
+  };
+  "board-grid" ++ " board-" ++ owner
+};
+
 [@react.component]
-let make = (~state, ~boardOwner: player, ~boardArray: board) => {
+let make = (~gameState, ~boardOwner: player, ~boardArray: board) => {
   <div className="board-container">
     <h2 className="board-title">
       {boardOwner
@@ -16,10 +24,10 @@ let make = (~state, ~boardOwner: player, ~boardArray: board) => {
            |> ReasonReact.string
        )}
     </h2>
-    <div className="board-grid">
+    <div className={getBoardNameClass(boardOwner)}>
       {boardArray
        |> Array.mapi((index: int, row: row) =>
-            <BoardRow key={string_of_int(index)} row index />
+            <BoardRow key={string_of_int(index)} row index boardOwner />
           )
        |> ReasonReact.array}
     </div>

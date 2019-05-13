@@ -5,8 +5,13 @@ var $$Array = require("bs-platform/lib/js/array.js");
 var React = require("react");
 var BoardRow$ReactHooksTemplate = require("./BoardRow.bs.js");
 
+function getBoardNameClass(boardOwner) {
+  var owner = boardOwner ? "ai" : "player";
+  return "board-grid board-" + owner;
+}
+
 function Board(Props) {
-  Props.state;
+  Props.gameState;
   var boardOwner = Props.boardOwner;
   var boardArray = Props.boardArray;
   return React.createElement("div", {
@@ -14,11 +19,12 @@ function Board(Props) {
             }, React.createElement("h2", {
                   className: "board-title"
                 }, boardOwner ? "Enemy" : "You"), React.createElement("div", {
-                  className: "board-grid"
+                  className: getBoardNameClass(boardOwner)
                 }, $$Array.mapi((function (index, row) {
                         return React.createElement(BoardRow$ReactHooksTemplate.make, {
                                     row: row,
                                     index: index,
+                                    boardOwner: boardOwner,
                                     key: String(index)
                                   });
                       }), boardArray)));
@@ -26,5 +32,6 @@ function Board(Props) {
 
 var make = Board;
 
+exports.getBoardNameClass = getBoardNameClass;
 exports.make = make;
 /* react Not a pure module */

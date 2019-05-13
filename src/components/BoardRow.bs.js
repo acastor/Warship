@@ -8,6 +8,7 @@ var BoardTile$ReactHooksTemplate = require("./BoardTile.bs.js");
 function BoardRow(Props) {
   var row = Props.row;
   var index = Props.index;
+  var boardOwner = Props.boardOwner;
   return React.createElement("div", {
               className: "board-row"
             }, $$Array.mapi((function (ind, tile) {
@@ -16,6 +17,7 @@ function BoardRow(Props) {
                                 x: String(index),
                                 y: String(ind),
                                 tile: tile,
+                                boardOwner: boardOwner,
                                 key: id
                               });
                   }), row));
