@@ -7,14 +7,14 @@ function BoardTile(Props) {
   var x = Props.x;
   var y = Props.y;
   var tile = Props.tile;
-  Props.boardOwner;
+  var boardOwner = Props.boardOwner;
   var tmp;
   switch (tile) {
     case 0 : 
         tmp = "";
         break;
     case 1 : 
-        tmp = " 🚢 ";
+        tmp = boardOwner ? "" : " 🚢 ";
         break;
     case 2 : 
         tmp = " 💨 ";

@@ -9,16 +9,16 @@ let make =
      |> (
        contents =>
          (
-           switch (contents) {
-             // todo hide the ship if this is in the ai board
-           | Ship => {js| 🚢 |js}
-           | Miss => {js| 💨 |js}
-           | Hit => {js| 🔥 |js}
-           | Sunk => {js| ☠ |js}
-           | Empty => ""
+           switch (contents, boardOwner) {
+           | (Ship, Human) => {js| 🚢 |js}
+           | (Ship, AI) => ""
+           | (Miss, _) => {js| 💨 |js}
+           | (Hit, _) => {js| 🔥 |js}
+           | (Sunk, _) => {js| ☠ |js}
+           | (Empty, _) => ""
            }
          )
-         |> ReasonReact.string
+         |> ReasonReact.string 
      )}
      </div>
   </div>;
