@@ -36,3 +36,7 @@
   cursor: pointer;
   background-color: #66a3d2;
 }
+
+.tile-emoji {
+  margin-top: 7px;
+}

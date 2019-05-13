@@ -31,7 +31,9 @@ function BoardTile(Props) {
               className: "board-tile",
               x: x,
               y: y
-            }, tmp);
+            }, React.createElement("div", {
+                  className: "tile-emoji"
+                }, tmp));
 }
 
 var make = BoardTile;

@@ -4,6 +4,7 @@ open SharedTypes;
 let make =
     (~x: string, ~y: string, ~tile: boardTileState, ~boardOwner: player) => {
   <div className="board-tile" x y>
+  <div className="tile-emoji">
     {tile
      |> (
        contents =>
@@ -19,5 +20,6 @@ let make =
          )
          |> ReasonReact.string
      )}
+     </div>
   </div>;
 };
