@@ -21,7 +21,6 @@ type player =
   | AI;
 
 type turnState =
-  | Setup
   | Playing(player)
   | Winner(player);
 

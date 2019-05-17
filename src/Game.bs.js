@@ -3,6 +3,7 @@
 
 var List = require("bs-platform/lib/js/list.js");
 var $$Array = require("bs-platform/lib/js/array.js");
+var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
@@ -37,6 +38,12 @@ function handleShipHit(board, fleet, x, y) {
   return /* () */0;
 }
 
+function isGameOver(fleet) {
+  return List.for_all((function (ship) {
+                return ship[/* isSunk */2];
+              }), fleet);
+}
+
 function takeTurn(gameState, x, y, boardOwner, setGameState) {
   var match = boardOwner ? /* tuple */[
       gameState[/* aiBoard */2],
@@ -45,6 +52,7 @@ function takeTurn(gameState, x, y, boardOwner, setGameState) {
       gameState[/* humanBoard */0],
       gameState[/* humanFleet */1]
     ];
+  var fleet = match[1];
   var board = match[0];
   var match$1 = Caml_array.caml_array_get(Caml_array.caml_array_get(board, x), y);
   if (match$1 !== 1) {
@@ -54,20 +62,41 @@ function takeTurn(gameState, x, y, boardOwner, setGameState) {
       Caml_array.caml_array_set(Caml_array.caml_array_get(board, x), y, /* Miss */2);
     }
   } else {
-    handleShipHit(board, match[1], x, y);
+    handleShipHit(board, fleet, x, y);
   }
   return Curry._1(setGameState, (function (param) {
+                var match = List.for_all((function (ship) {
+                        return ship[/* isSunk */2];
+                      }), fleet);
                 if (boardOwner) {
+                  if (match) {
+                    return /* record */[
+                            /* humanBoard */gameState[/* humanBoard */0],
+                            /* humanFleet */gameState[/* humanFleet */1],
+                            /* aiBoard */gameState[/* aiBoard */2],
+                            /* aiFleet */gameState[/* aiFleet */3],
+                            /* turnState : Winner */Block.__(1, [/* Human */0])
+                          ];
+                  } else {
+                    return /* record */[
+                            /* humanBoard */gameState[/* humanBoard */0],
+                            /* humanFleet */gameState[/* humanFleet */1],
+                            /* aiBoard */$$Array.map((function (elem) {
+                                    return elem;
+                                  }), gameState[/* aiBoard */2]),
+                            /* aiFleet */List.map((function (elem) {
+                                    return elem;
+                                  }), gameState[/* aiFleet */3]),
+                            /* turnState : Playing */Block.__(0, [/* Human */0])
+                          ];
+                  }
+                } else if (match) {
                   return /* record */[
                           /* humanBoard */gameState[/* humanBoard */0],
                           /* humanFleet */gameState[/* humanFleet */1],
-                          /* aiBoard */$$Array.map((function (elem) {
-                                  return elem;
-                                }), gameState[/* aiBoard */2]),
-                          /* aiFleet */List.map((function (elem) {
-                                  return elem;
-                                }), gameState[/* aiFleet */3]),
-                          /* turnState */gameState[/* turnState */4]
+                          /* aiBoard */gameState[/* aiBoard */2],
+                          /* aiFleet */gameState[/* aiFleet */3],
+                          /* turnState : Winner */Block.__(1, [/* AI */1])
                         ];
                 } else {
                   return /* record */[
@@ -79,7 +108,7 @@ function takeTurn(gameState, x, y, boardOwner, setGameState) {
                                 }), gameState[/* humanFleet */1]),
                           /* aiBoard */gameState[/* aiBoard */2],
                           /* aiFleet */gameState[/* aiFleet */3],
-                          /* turnState */gameState[/* turnState */4]
+                          /* turnState : Playing */Block.__(0, [/* AI */1])
                         ];
                 }
               }));
@@ -94,6 +123,7 @@ function Game(Props) {
           return AppContext$ReactHooksTemplate.initialState(/* () */0);
         }));
   var setGameState = match[1];
+  var gameState = match[0];
   var partialAiTakeTurn = function (param) {
     return (function (param) {
         var func = function (param$1, param$2, param$3) {
@@ -124,22 +154,28 @@ function Game(Props) {
           });
       });
   };
+  var match$1 = gameState[/* turnState */4];
+  var tmp;
+  tmp = match$1.tag ? (
+      match$1[0] ? React.createElement("h1", undefined, "YOU LOST!") : React.createElement("h1", undefined, "YOU WON!")
+    ) : React.createElement("div", undefined, React.createElement("h2", {
+              className: "board-title"
+            }, "Warship"), React.createElement(AppContext$ReactHooksTemplate.BoardProvider[/* make */1], AppContext$ReactHooksTemplate.BoardProvider[/* makeProps */0](gameState, null, /* () */0), React.createElement(Board$ReactHooksTemplate.make, {
+                  boardOwner: /* Human */0,
+                  onTileClick: partialAiTakeTurn
+                }), React.createElement(Board$ReactHooksTemplate.make, {
+                  boardOwner: /* AI */1,
+                  onTileClick: partialTakeTurn
+                })));
   return React.createElement("div", {
               className: "game-container"
-            }, React.createElement("h2", {
-                  className: "board-title"
-                }, "Warship"), React.createElement(AppContext$ReactHooksTemplate.BoardProvider[/* make */1], AppContext$ReactHooksTemplate.BoardProvider[/* makeProps */0](match[0], null, /* () */0), React.createElement(Board$ReactHooksTemplate.make, {
-                      boardOwner: /* Human */0,
-                      onTileClick: partialAiTakeTurn
-                    }), React.createElement(Board$ReactHooksTemplate.make, {
-                      boardOwner: /* AI */1,
-                      onTileClick: partialTakeTurn
-                    })));
+            }, tmp);
 }
 
 var make = Game;
 
 exports.handleShipHit = handleShipHit;
+exports.isGameOver = isGameOver;
 exports.takeTurn = takeTurn;
 exports.aiTakeTurn = aiTakeTurn;
 exports.make = make;
