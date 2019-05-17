@@ -4,6 +4,7 @@
 var $$Array = require("bs-platform/lib/js/array.js");
 var React = require("react");
 var BoardRow$ReactHooksTemplate = require("./BoardRow.bs.js");
+var AppContext$ReactHooksTemplate = require("./AppContext.bs.js");
 
 function getBoardNameClass(boardOwner) {
   var owner = boardOwner ? "ai" : "player";
@@ -11,9 +12,10 @@ function getBoardNameClass(boardOwner) {
 }
 
 function Board(Props) {
-  Props.gameState;
   var boardOwner = Props.boardOwner;
-  var boardArray = Props.boardArray;
+  var onTileClick = Props.onTileClick;
+  var gameState = React.useContext(AppContext$ReactHooksTemplate.boardContext);
+  var board = boardOwner ? gameState[/* aiBoard */2] : gameState[/* humanBoard */0];
   return React.createElement("div", {
               className: "board-container"
             }, React.createElement("h2", {
@@ -22,12 +24,12 @@ function Board(Props) {
                   className: getBoardNameClass(boardOwner)
                 }, $$Array.mapi((function (index, row) {
                         return React.createElement(BoardRow$ReactHooksTemplate.make, {
-                                    row: row,
                                     index: index,
                                     boardOwner: boardOwner,
+                                    onTileClick: onTileClick,
                                     key: String(index)
                                   });
-                      }), boardArray)));
+                      }), board)));
 }
 
 var make = Board;

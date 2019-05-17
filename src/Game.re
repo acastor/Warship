@@ -2,121 +2,99 @@
 
 open SharedTypes;
 
-let boardSize = 10;
-let directionVertical = 0;
-let directionHorizontal = 1;
+let handleShipHit = (~board: board, ~fleet: fleet, ~x: int, ~y: int) => {
+  // which ship did we hit
+  let hitShip =
+    List.find(
+      (ship: ship) => {
+        let coordinateList = Array.to_list(ship.coordinates);
+        List.exists(
+          coordinateTuple => {
+            let (x2, y2) = coordinateTuple;
+            x == x2 && y == y2;
+          },
+          coordinateList,
+        );
+      },
+      fleet,
+    );
 
-let initialGameState = () => {
-  humanBoard: Array.make_matrix(boardSize, boardSize, Empty),
-  aiBoard: Array.make_matrix(boardSize, boardSize, Empty),
-  gameState: Playing(Human),
-};
+  // update the ship
+  hitShip.damage = hitShip.damage + 1;
+  board[x][y] = Hit;
 
-// TODO clean this up; mapping of shiptype to ship length
-let buildFleet = () => {
-  let carrier = {
-    damage: 0,
-    shipType: Carrier,
-    isSunk: false,
-    shipLength: 5,
-    coordinates: Array.make(5, (-1, -1)),
-  };
-  let battleship = {
-    damage: 0,
-    shipType: Battleship,
-    isSunk: false,
-    shipLength: 4,
-    coordinates: Array.make(4, (-1, -1)),
-  };
-  let submarine = {
-    damage: 0,
-    shipType: Submarine,
-    isSunk: false,
-    shipLength: 3,
-    coordinates: Array.make(3, (-1, -1)),
-  };
-  let destroyer = {
-    damage: 0,
-    shipType: Destroyer,
-    isSunk: false,
-    shipLength: 3,
-    coordinates: Array.make(3, (-1, -1)),
-  };
-  let patrolBoat = {
-    damage: 0,
-    shipType: PatrolBoat,
-    isSunk: false,
-    shipLength: 2,
-    coordinates: Array.make(2, (-1, -1)),
-  };
-  [|carrier, battleship, submarine, destroyer, patrolBoat|];
-};
-let isLegalPlacement = (~board, x: int, y: int, direction: int, shipLength: int) => {
-  let validPlacement = ref(false);
-  if (direction == directionVertical) {
-    validPlacement := x + shipLength <= boardSize;
-  } else {
-    validPlacement := y + shipLength <= boardSize;
-  };
+  // is the ship sunk?
+  if (hitShip.damage == hitShip.shipLength) {
+    hitShip.isSunk = true;
 
-  if (validPlacement^) {
-    for (index in 0 to shipLength - 1) {
-      if(validPlacement^) {  
-        if (direction == directionVertical) {
-          validPlacement := board[x + index][y] != Ship;
-        } else {
-          validPlacement := board[x][y + index] != Ship;
-        }
-      }
+    for (index in 0 to Array.length(hitShip.coordinates) - 1) {
+      let (x2, y2) = hitShip.coordinates[index];
+      board[x2][y2] = Sunk;
     };
   };
 
-  validPlacement;
+  // are all the ships sunk?
+  let hasSunkAllShips =
+    List.for_all((ship: ship) => ship.isSunk == true, fleet);
+  ();
+  // if(hasSunkAllShips) {
+  //   // end game
+  // }
+  //  else {
+  //   // switch turn
+  // }
 };
 
-let randomlyPlaceShips = (~board, fleet: fleet) => {
-  // iterate through every ship
-  Array.map(
-    ship =>
-      {
-        let randomX = ref(Js.Math.floor(float_of_int(boardSize) *. Js.Math.random()));
-        let randomY = ref(Js.Math.floor(float_of_int(boardSize) *. Js.Math.random()));
-        // 2 for the two directions (north/south and east/west)
-        let randomDirection = ref(Js.Math.floor(float_of_int(2) *. Js.Math.random()));
-        while(!isLegalPlacement(board, randomX^, randomY^, randomDirection^, ship.shipLength)^) {
-             randomX := Js.Math.floor(float_of_int(boardSize) *. Js.Math.random());
-             randomY := Js.Math.floor(float_of_int(boardSize) *. Js.Math.random());
-             randomDirection := Js.Math.floor(float_of_int(2) *. Js.Math.random());
-        };
-        let x = randomX^;
-        let y = randomY^;
-        let direction = randomDirection^;
+let takeTurn =
+    (~gameState: state, ~x: int, ~y: int, ~boardOwner: player, ~setGameState) => {
+  let (board, fleet) =
+    switch (boardOwner) {
+    | Human => (gameState.humanBoard, gameState.humanFleet)
+    | AI => (gameState.aiBoard, gameState.aiFleet)
+    };
 
-        // update the board state and save the coordinates on the ship instance
-        for (index in 0 to ship.shipLength - 1) {
-          if (direction == directionVertical) {
-           board[x + index][y] = Ship;
-           Array.set(ship.coordinates, index, (x + index, y));
-          } else {
-            board[x][y + index] = Ship;
-            Array.set(ship.coordinates, index, (x, y + index));
-          };
-        };
-      },
-    fleet);
+  switch (board[x][y]) {
+  | Ship => handleShipHit(board, fleet, x, y)
+  | Empty => board[x][y] = Miss;
+  | _ => ()
+  };
+
+  setGameState(_ =>
+    switch (boardOwner) {
+    | Human => {
+        ...gameState,
+        humanBoard: Array.map(elem => elem, gameState.humanBoard),
+        humanFleet: List.map(elem => elem, gameState.humanFleet),
+      }
+    | AI => {
+        ...gameState,
+        aiBoard: Array.map(elem => elem, gameState.aiBoard),
+        aiFleet: List.map(elem => elem, gameState.aiFleet),
+      }
+    }
+  );
+
+  // switch turn
+};
+
+let aiTakeTurn =
+    (~gameState: state, ~x: int, ~y: int, ~boardOwner: player, ~setGameState) => {
+  ()// determine ai guess
+    ;
+    // call takeTurn with coordinates
 };
 
 [@react.component]
 let make = () => {
-  let (gameState, updateGameState) = React.useState(initialGameState);
-  let (humanFleet, updateHumanFleet) = React.useState(buildFleet);
-  let (aiFleet, updateAIFleet) = React.useState(buildFleet);
-  randomlyPlaceShips(gameState.humanBoard, humanFleet);
-  randomlyPlaceShips(gameState.aiBoard, aiFleet);
+  let (gameState, setGameState) = React.useState(AppContext.initialState);
+  let partialAiTakeTurn = aiTakeTurn(~setGameState);
+  let partialTakeTurn = takeTurn(~setGameState);
 
   <div className="game-container">
     <h2 className="board-title"> {ReasonReact.string("Warship")} </h2>
-    <Board gameState boardOwner=Human boardArray={gameState.humanBoard} />
-    <Board gameState boardOwner=AI boardArray={gameState.aiBoard} />
+    <AppContext.BoardProvider value=gameState>
+      <Board boardOwner=Human onTileClick=partialAiTakeTurn />
+      <Board boardOwner=AI onTileClick=partialTakeTurn />
+    </AppContext.BoardProvider>
   </div>;
 };

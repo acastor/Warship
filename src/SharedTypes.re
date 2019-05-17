@@ -20,24 +20,28 @@ type player =
   | Human
   | AI;
 
-type gameState =
+type turnState =
   | Setup
   | Playing(player)
   | Winner(player);
 
-type state = {
-  humanBoard: board,
-  aiBoard: board,
-  gameState: gameState
-};
-
 type ship = {
   mutable damage: int,
-  shipType: shipType,
+  shipType,
   mutable isSunk: bool,
   shipLength: int,
   // these shouldn't be mutable.. is there a way to not define them right away?
-  mutable coordinates: array((int, int))
+  mutable coordinates: array((int, int)),
 };
 
-type fleet = array(ship);
+type fleet = list(ship);
+
+type state = {
+  humanBoard: board,
+  humanFleet: fleet,
+  aiBoard: board,
+  aiFleet: fleet,
+  turnState,
+};
+
+let boardSize = 10;

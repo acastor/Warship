@@ -3,24 +3,27 @@
 
 var $$Array = require("bs-platform/lib/js/array.js");
 var React = require("react");
+var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var BoardTile$ReactHooksTemplate = require("./BoardTile.bs.js");
+var AppContext$ReactHooksTemplate = require("./AppContext.bs.js");
 
 function BoardRow(Props) {
-  var row = Props.row;
   var index = Props.index;
   var boardOwner = Props.boardOwner;
+  var onTileClick = Props.onTileClick;
+  var gameState = React.useContext(AppContext$ReactHooksTemplate.boardContext);
+  var board = boardOwner ? gameState[/* aiBoard */2] : gameState[/* humanBoard */0];
   return React.createElement("div", {
               className: "board-row"
             }, $$Array.mapi((function (ind, tile) {
-                    var id = String(index) + String(ind);
                     return React.createElement(BoardTile$ReactHooksTemplate.make, {
                                 x: String(index),
                                 y: String(ind),
-                                tile: tile,
                                 boardOwner: boardOwner,
-                                key: id
+                                onTileClick: onTileClick,
+                                key: String(index) + String(ind)
                               });
-                  }), row));
+                  }), Caml_array.caml_array_get(board, index)));
 }
 
 var make = BoardRow;
