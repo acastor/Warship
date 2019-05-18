@@ -4,5 +4,11 @@
 
 var boardSize = 10;
 
+var directionVertical = 0;
+
+var directionHorizontal = 1;
+
 exports.boardSize = boardSize;
+exports.directionVertical = directionVertical;
+exports.directionHorizontal = directionHorizontal;
 /* No side effect */

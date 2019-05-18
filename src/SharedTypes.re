@@ -44,3 +44,7 @@ type state = {
 };
 
 let boardSize = 10;
+
+let directionVertical = 0;
+
+let directionHorizontal = 1;

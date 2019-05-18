@@ -7,6 +7,7 @@ var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
 var Js_math = require("bs-platform/lib/js/js_math.js");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
+var Util$ReactHooksTemplate = require("../Util.bs.js");
 var SharedTypes$ReactHooksTemplate = require("../SharedTypes.bs.js");
 
 function buildFleet(param) {
@@ -78,34 +79,12 @@ function buildFleet(param) {
         ];
 }
 
-function isLegalPlacement(board, x, y, direction, shipLength) {
-  var validPlacement = /* record */[/* contents */false];
-  if (direction === 0) {
-    validPlacement[0] = (x + shipLength | 0) <= SharedTypes$ReactHooksTemplate.boardSize;
-  } else {
-    validPlacement[0] = (y + shipLength | 0) <= SharedTypes$ReactHooksTemplate.boardSize;
-  }
-  if (validPlacement[0]) {
-    for(var index = 0 ,index_finish = shipLength - 1 | 0; index <= index_finish; ++index){
-      if (validPlacement[0]) {
-        if (direction === 0) {
-          validPlacement[0] = Caml_array.caml_array_get(Caml_array.caml_array_get(board, x + index | 0), y) !== /* Ship */1;
-        } else {
-          validPlacement[0] = Caml_array.caml_array_get(Caml_array.caml_array_get(board, x), y + index | 0) !== /* Ship */1;
-        }
-      }
-      
-    }
-  }
-  return validPlacement;
-}
-
 function randomlyPlaceShips(board, fleet) {
   return List.map((function (ship) {
                 var randomX = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                 var randomY = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                 var randomDirection = Js_math.floor(2 * Math.random());
-                while(!isLegalPlacement(board, randomX, randomY, randomDirection, ship[/* shipLength */3])[0]) {
+                while(!Util$ReactHooksTemplate.isLegalPlacement(board, randomX, randomY, randomDirection, ship[/* shipLength */3])[0]) {
                   randomX = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                   randomY = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                   randomDirection = Js_math.floor(2 * Math.random());
@@ -114,7 +93,7 @@ function randomlyPlaceShips(board, fleet) {
                 var y = randomY;
                 var direction = randomDirection;
                 for(var index = 0 ,index_finish = ship[/* shipLength */3] - 1 | 0; index <= index_finish; ++index){
-                  if (direction === 0) {
+                  if (direction === SharedTypes$ReactHooksTemplate.directionVertical) {
                     Caml_array.caml_array_set(Caml_array.caml_array_get(board, x + index | 0), y, /* Ship */1);
                     Caml_array.caml_array_set(ship[/* coordinates */4], index, /* tuple */[
                           x + index | 0,
@@ -164,14 +143,7 @@ var BoardProvider = /* module */[
   /* make */make
 ];
 
-var directionVertical = 0;
-
-var directionHorizontal = 1;
-
 exports.buildFleet = buildFleet;
-exports.directionVertical = directionVertical;
-exports.directionHorizontal = directionHorizontal;
-exports.isLegalPlacement = isLegalPlacement;
 exports.randomlyPlaceShips = randomlyPlaceShips;
 exports.initialState = initialState;
 exports.boardContext = boardContext;

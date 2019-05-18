@@ -1,4 +1,5 @@
 open SharedTypes;
+open Util;
 
 // TODO clean this up; mapping of shiptype to ship length
 let buildFleet = () => {
@@ -38,33 +39,6 @@ let buildFleet = () => {
     coordinates: Array.make(2, ((-1), (-1))),
   };
   [carrier, battleship, submarine, destroyer, patrolBoat];
-};
-
-let directionVertical = 0;
-let directionHorizontal = 1;
-
-let isLegalPlacement =
-    (~board, x: int, y: int, direction: int, shipLength: int) => {
-  let validPlacement = ref(false);
-  if (direction == directionVertical) {
-    validPlacement := x + shipLength <= boardSize;
-  } else {
-    validPlacement := y + shipLength <= boardSize;
-  };
-
-  if (validPlacement^) {
-    for (index in 0 to shipLength - 1) {
-      if (validPlacement^) {
-        if (direction == directionVertical) {
-          validPlacement := board[x + index][y] != Ship;
-        } else {
-          validPlacement := board[x][y + index] != Ship;
-        };
-      };
-    };
-  };
-
-  validPlacement;
 };
 
 let randomlyPlaceShips = (~board, fleet: fleet) => {
