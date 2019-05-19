@@ -144,7 +144,7 @@ function getProbabilityGrid(humanFleet, humanBoard) {
           }))(humanFleet);
   var checkCoordinateInDirection = function (humanBoard, x, y, direction, ship, probabilityGrid) {
     if (Util$ReactHooksTemplate.isLegalPlacement(aiVirtualBoard, x, y, direction, ship[/* shipLength */3])) {
-      var shipCoordinates = Util$ReactHooksTemplate.getCoordinatesForShip(ship, x, y, direction);
+      var shipCoordinates = Util$ReactHooksTemplate.getCoordinatesForShip(ship[/* shipLength */3], x, y, direction);
       var tileWeight = /* record */[/* contents */1];
       var numberOfHitCells = getNumberOfHitCells(shipCoordinates, humanBoard);
       if (numberOfHitCells > 0) {

@@ -10,87 +10,62 @@ var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Util$ReactHooksTemplate = require("../Util.bs.js");
 var SharedTypes$ReactHooksTemplate = require("../SharedTypes.bs.js");
 
-function buildFleet(param) {
-  var carrier = /* record */[
-    /* damage */0,
-    /* shipType : Carrier */0,
-    /* isSunk */false,
-    /* shipLength */5,
-    /* coordinates */Caml_array.caml_make_vect(5, /* tuple */[
-          -1,
-          -1
-        ])
-  ];
-  var battleship = /* record */[
-    /* damage */0,
-    /* shipType : Battleship */1,
-    /* isSunk */false,
-    /* shipLength */4,
-    /* coordinates */Caml_array.caml_make_vect(4, /* tuple */[
-          -1,
-          -1
-        ])
-  ];
-  var submarine = /* record */[
-    /* damage */0,
-    /* shipType : Submarine */3,
-    /* isSunk */false,
-    /* shipLength */3,
-    /* coordinates */Caml_array.caml_make_vect(3, /* tuple */[
-          -1,
-          -1
-        ])
-  ];
-  var destroyer = /* record */[
-    /* damage */0,
-    /* shipType : Destroyer */2,
-    /* isSunk */false,
-    /* shipLength */3,
-    /* coordinates */Caml_array.caml_make_vect(3, /* tuple */[
-          -1,
-          -1
-        ])
-  ];
-  var patrolBoat = /* record */[
-    /* damage */0,
-    /* shipType : PatrolBoat */4,
-    /* isSunk */false,
-    /* shipLength */2,
-    /* coordinates */Caml_array.caml_make_vect(2, /* tuple */[
-          -1,
-          -1
-        ])
-  ];
-  return /* :: */[
-          carrier,
-          /* :: */[
-            battleship,
-            /* :: */[
-              submarine,
-              /* :: */[
-                destroyer,
-                /* :: */[
-                  patrolBoat,
-                  /* [] */0
-                ]
-              ]
-            ]
-          ]
+function createShip(shipLength, coordinates, shipType) {
+  return /* record */[
+          /* damage */0,
+          /* shipType */shipType,
+          /* isSunk */false,
+          /* shipLength */shipLength,
+          /* coordinates */coordinates
         ];
 }
 
+var shipsAndLengths = /* :: */[
+  /* tuple */[
+    /* Carrier */0,
+    5
+  ],
+  /* :: */[
+    /* tuple */[
+      /* Battleship */1,
+      4
+    ],
+    /* :: */[
+      /* tuple */[
+        /* Submarine */3,
+        3
+      ],
+      /* :: */[
+        /* tuple */[
+          /* Destroyer */2,
+          3
+        ],
+        /* :: */[
+          /* tuple */[
+            /* PatrolBoat */4,
+            2
+          ],
+          /* [] */0
+        ]
+      ]
+    ]
+  ]
+];
+
 function updateBoardWithShipCoordinates(board, ship) {
-  return $$Array.map((function (param) {
-                return Caml_array.caml_array_set(Caml_array.caml_array_get(board, param[0]), param[1], /* Ship */1);
-              }), ship[/* coordinates */4]);
+  $$Array.map((function (param) {
+          return Caml_array.caml_array_set(Caml_array.caml_array_get(board, param[0]), param[1], /* Ship */1);
+        }), ship[/* coordinates */4]);
+  return /* () */0;
 }
 
-function randomlyPlaceShips(board, fleet) {
-  return List.map((function (ship) {
+function randomlyPlaceShips(board) {
+  return List.map((function (param) {
+                var shipLength = param[1];
                 var randomX = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                 var randomY = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                 var randomDirection = Js_math.floor(2 * Math.random());
-                while(!Util$ReactHooksTemplate.isLegalPlacement(board, randomX, randomY, randomDirection, ship[/* shipLength */3])) {
+                while(!Util$ReactHooksTemplate.isLegalPlacement(board, randomX, randomY, randomDirection, shipLength)) {
                   randomX = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                   randomY = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                   randomDirection = Js_math.floor(2 * Math.random());
@@ -98,18 +73,18 @@ function randomlyPlaceShips(board, fleet) {
                 var x = randomX;
                 var y = randomY;
                 var direction = randomDirection;
-                ship[/* coordinates */4] = Util$ReactHooksTemplate.getCoordinatesForShip(ship, x, y, direction);
-                return updateBoardWithShipCoordinates(board, ship);
-              }), fleet);
+                var shipCoordinates = Util$ReactHooksTemplate.getCoordinatesForShip(shipLength, x, y, direction);
+                var ship = createShip(shipLength, shipCoordinates, param[0]);
+                updateBoardWithShipCoordinates(board, ship);
+                return ship;
+              }), shipsAndLengths);
 }
 
 function initialState(param) {
-  var humanFleet = buildFleet(/* () */0);
-  var aiFleet = buildFleet(/* () */0);
   var humanBoard = $$Array.make_matrix(SharedTypes$ReactHooksTemplate.boardSize, SharedTypes$ReactHooksTemplate.boardSize, /* Empty */0);
   var aiBoard = $$Array.make_matrix(SharedTypes$ReactHooksTemplate.boardSize, SharedTypes$ReactHooksTemplate.boardSize, /* Empty */0);
-  randomlyPlaceShips(humanBoard, humanFleet);
-  randomlyPlaceShips(aiBoard, aiFleet);
+  var humanFleet = randomlyPlaceShips(humanBoard);
+  var aiFleet = randomlyPlaceShips(aiBoard);
   return /* record */[
           /* humanBoard */humanBoard,
           /* humanFleet */humanFleet,
@@ -135,7 +110,8 @@ var BoardProvider = /* module */[
   /* make */make
 ];
 
-exports.buildFleet = buildFleet;
+exports.createShip = createShip;
+exports.shipsAndLengths = shipsAndLengths;
 exports.updateBoardWithShipCoordinates = updateBoardWithShipCoordinates;
 exports.randomlyPlaceShips = randomlyPlaceShips;
 exports.initialState = initialState;

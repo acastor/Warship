@@ -18,12 +18,12 @@ function isLegalPlacement(board, x, y, direction, shipLength) {
   return validPlacement;
 }
 
-function getCoordinatesForShip(ship, x, y, direction) {
-  var shipCoordinatesArr = Caml_array.caml_make_vect(ship[/* shipLength */3], /* tuple */[
+function getCoordinatesForShip(shipLength, x, y, direction) {
+  var shipCoordinatesArr = Caml_array.caml_make_vect(shipLength, /* tuple */[
         -1,
         -1
       ]);
-  for(var index = 0 ,index_finish = ship[/* shipLength */3] - 1 | 0; index <= index_finish; ++index){
+  for(var index = 0 ,index_finish = shipLength - 1 | 0; index <= index_finish; ++index){
     if (direction === SharedTypes$ReactHooksTemplate.directionVertical) {
       Caml_array.caml_array_set(shipCoordinatesArr, index, /* tuple */[
             x + index | 0,

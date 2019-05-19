@@ -24,9 +24,9 @@ let isLegalPlacement =
   validPlacement^;
 };
 
-let getCoordinatesForShip = (ship: ship, x: int, y: int, direction: int) => {
-  let shipCoordinatesArr = Array.make(ship.shipLength, ((-1), (-1)));
-  for (index in 0 to ship.shipLength - 1) {
+let getCoordinatesForShip = (shipLength: int, x: int, y: int, direction: int) => {
+  let shipCoordinatesArr = Array.make(shipLength, ((-1), (-1)));
+  for (index in 0 to shipLength - 1) {
     if (direction == directionVertical) {
       shipCoordinatesArr[index] = (x + index, y);
     } else {

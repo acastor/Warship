@@ -80,7 +80,7 @@ let getProbabilityGrid = (~humanFleet: fleet, ~humanBoard: board) => {
         ~probabilityGrid,
       ) =>
     if (Util.isLegalPlacement(aiVirtualBoard, x, y, direction, ship.shipLength)) {
-      let shipCoordinates = getCoordinatesForShip(ship, x, y, direction);
+      let shipCoordinates = getCoordinatesForShip(ship.shipLength, x, y, direction);
       let tileWeight = ref(1);
       let numberOfHitCells = getNumberOfHitCells(shipCoordinates, humanBoard);
 
