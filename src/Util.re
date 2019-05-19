@@ -1,7 +1,7 @@
 open SharedTypes;
 
 let isLegalPlacement =
-    (~board, x: int, y: int, direction: int, shipLength: int) => {
+    (board: board, x: int, y: int, direction: int, shipLength: int) => {
   let validPlacement = ref(false);
   if (direction == directionVertical) {
     validPlacement := x + shipLength <= boardSize;
@@ -13,13 +13,25 @@ let isLegalPlacement =
     for (index in 0 to shipLength - 1) {
       if (validPlacement^) {
         if (direction == directionVertical) {
-          validPlacement := board[x + index][y] == Empty;
+          validPlacement := board[x + index][y] != Ship;
         } else {
-          validPlacement := board[x][y + index] == Empty;
+          validPlacement := board[x][y + index] != Ship;
         };
       };
     };
   };
 
-  validPlacement;
+  validPlacement^;
+};
+
+let getCoordinatesForShip = (ship: ship, x: int, y: int, direction: int) => {
+  let shipCoordinatesArr = Array.make(ship.shipLength, ((-1), (-1)));
+  for (index in 0 to ship.shipLength - 1) {
+    if (direction == directionVertical) {
+      shipCoordinatesArr[index] = (x + index, y);
+    } else {
+      shipCoordinatesArr[index] = (x, y + index);
+    };
+  };
+  shipCoordinatesArr;
 };

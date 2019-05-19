@@ -33,7 +33,7 @@ function BoardTile(Props) {
   var boardOwner = Props.boardOwner;
   var onTileClick = Props.onTileClick;
   var gameState = React.useContext(AppContext$ReactHooksTemplate.boardContext);
-  var click = function ($$event) {
+  var click = function (param) {
     return Curry._4(onTileClick, gameState, Caml_format.caml_int_of_string(x), Caml_format.caml_int_of_string(y), boardOwner);
   };
   var board = boardOwner ? gameState[/* aiBoard */2] : gameState[/* humanBoard */0];

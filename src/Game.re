@@ -1,8 +1,9 @@
 [%bs.raw {|require('./game.css')|}];
 
 open SharedTypes;
+open AI;
 
-let handleShipHit = (~board: board, ~fleet: fleet, ~x: int, ~y: int) => {
+let handleShipHit = (board: board, fleet: fleet, ~x: int, ~y: int) => {
   // which ship did we hit
   let hitShip =
     List.find(
@@ -32,41 +33,16 @@ let handleShipHit = (~board: board, ~fleet: fleet, ~x: int, ~y: int) => {
       board[x2][y2] = Sunk;
     };
   };
-
-  // are all the ships sunk?
-  let hasSunkAllShips =
-    List.for_all((ship: ship) => ship.isSunk == true, fleet);
-  ();
-  // if(hasSunkAllShips) {
-  //   // end game
-  // }
-  //  else {
-  //   // switch turn
-  // }
-};
-
-let isGameOver = (~fleet: fleet) => List.for_all(ship => ship.isSunk, fleet);
-
-let aiTakeTurn = (~gameState: state, ~boardOwner: player, ~setGameState) => {
-  ()// takeTurn(
-    //   ~gameState,
-    //   ~x=0,
-    //   ~y=0,
-    //   ~boardOwner,
-    //   ~setGameState,
-    ; // call takeTurn with coordinates
- // determine ai guess
-    // );
 };
 
 /*
-  Method to shoot at a tile. 
+  Method to shoot at a tile.
   Returns whether the shot was valid. Invalid shots are at Sunk and Miss tiles.
  */
-let shoot = (~board: board, ~x: int, ~y: int, ~fleet: fleet) => {
+let shoot = (board: board, ~x: int, ~y: int, fleet: fleet) => {
   switch (board[x][y]) {
   | Ship =>
-    handleShipHit(board, fleet, x, y);
+    handleShipHit(board, fleet, ~x, ~y);
     true;
   | Empty =>
     board[x][y] = Miss;
@@ -84,10 +60,15 @@ let takeTurn =
     };
 
   // only update the state for valid moves (clicking an Empty or Ship tile)
-  if (shoot(board, x, y, fleet)) {
-    // check for winner and switch turn & update board or end game
+  let shouldAITakeTurn = ref(shoot(board, ~x, ~y, fleet));
+  if (shouldAITakeTurn^) {
+    // check for winner
+    let isGameOver = List.for_all(ship => ship.isSunk, fleet);
+    // let the ai take a turn if the game isn't over
+    shouldAITakeTurn := !isGameOver;
+    // switch turn & update board or end game
     setGameState(_ =>
-      switch (boardOwner, isGameOver(fleet)) {
+      switch (boardOwner, isGameOver) {
       | (Human, false) => {
           ...gameState,
           humanBoard: Array.map(tile => tile, gameState.humanBoard),
@@ -104,18 +85,23 @@ let takeTurn =
       | (AI, true) => {...gameState, turnState: Winner(Human)}
       }
     );
-
-    if (gameState.turnState == Playing(AI)) {
-      aiTakeTurn(~gameState, ~boardOwner=Human, ~setGameState);
-    };
   };
+  shouldAITakeTurn^;
+};
+
+let aiTakeTurn = (~gameState: state, ~boardOwner: player, ~setGameState) => {
+  let (x, y) = aiShoot(gameState.humanFleet, gameState.humanBoard);
+  ignore(takeTurn(~gameState, ~x, ~y, ~boardOwner, ~setGameState));
 };
 
 let onTileClickHandler =
     (~gameState: state, ~x: int, ~y: int, ~boardOwner: player, ~setGameState) => {
   switch (boardOwner) {
   | Human => ()
-  | AI => takeTurn(~gameState, ~x, ~y, ~boardOwner, ~setGameState)
+  | AI =>
+    if (takeTurn(~gameState, ~x, ~y, ~boardOwner, ~setGameState)) {
+      aiTakeTurn(~gameState, ~boardOwner=Human, ~setGameState);
+    }
   };
 };
 

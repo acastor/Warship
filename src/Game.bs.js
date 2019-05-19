@@ -6,8 +6,8 @@ var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
-var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
+var AI$ReactHooksTemplate = require("./AI.bs.js");
 var Board$ReactHooksTemplate = require("./components/Board.bs.js");
 var AppContext$ReactHooksTemplate = require("./components/AppContext.bs.js");
 
@@ -32,21 +32,10 @@ function handleShipHit(board, fleet, x, y) {
       var match = Caml_array.caml_array_get(hitShip[/* coordinates */4], index);
       Caml_array.caml_array_set(Caml_array.caml_array_get(board, match[0]), match[1], /* Sunk */4);
     }
+    return /* () */0;
+  } else {
+    return 0;
   }
-  List.for_all((function (ship) {
-          return ship[/* isSunk */2] === true;
-        }), fleet);
-  return /* () */0;
-}
-
-function isGameOver(fleet) {
-  return List.for_all((function (ship) {
-                return ship[/* isSunk */2];
-              }), fleet);
-}
-
-function aiTakeTurn(gameState, boardOwner, setGameState) {
-  return /* () */0;
 }
 
 function shoot(board, x, y, fleet) {
@@ -73,13 +62,15 @@ function takeTurn(gameState, x, y, boardOwner, setGameState) {
       gameState[/* humanFleet */1]
     ];
   var fleet = match[1];
-  if (shoot(match[0], x, y, fleet)) {
+  var shouldAITakeTurn = shoot(match[0], x, y, fleet);
+  if (shouldAITakeTurn) {
+    var isGameOver = List.for_all((function (ship) {
+            return ship[/* isSunk */2];
+          }), fleet);
+    shouldAITakeTurn = !isGameOver;
     Curry._1(setGameState, (function (param) {
-            var match = List.for_all((function (ship) {
-                    return ship[/* isSunk */2];
-                  }), fleet);
             if (boardOwner) {
-              if (match) {
+              if (isGameOver) {
                 return /* record */[
                         /* humanBoard */gameState[/* humanBoard */0],
                         /* humanFleet */gameState[/* humanFleet */1],
@@ -100,7 +91,7 @@ function takeTurn(gameState, x, y, boardOwner, setGameState) {
                         /* turnState : Playing */Block.__(0, [/* AI */1])
                       ];
               }
-            } else if (match) {
+            } else if (isGameOver) {
               return /* record */[
                       /* humanBoard */gameState[/* humanBoard */0],
                       /* humanFleet */gameState[/* humanFleet */1],
@@ -122,16 +113,19 @@ function takeTurn(gameState, x, y, boardOwner, setGameState) {
                     ];
             }
           }));
-    Caml_obj.caml_equal(gameState[/* turnState */4], /* Playing */Block.__(0, [/* AI */1]));
-    return /* () */0;
-  } else {
-    return 0;
   }
+  return shouldAITakeTurn;
+}
+
+function aiTakeTurn(gameState, boardOwner, setGameState) {
+  var match = AI$ReactHooksTemplate.aiShoot(gameState[/* humanFleet */1], gameState[/* humanBoard */0]);
+  takeTurn(gameState, match[0], match[1], boardOwner, setGameState);
+  return /* () */0;
 }
 
 function onTileClickHandler(gameState, x, y, boardOwner, setGameState) {
-  if (boardOwner) {
-    return takeTurn(gameState, x, y, boardOwner, setGameState);
+  if (boardOwner && takeTurn(gameState, x, y, boardOwner, setGameState)) {
+    return aiTakeTurn(gameState, /* Human */0, setGameState);
   } else {
     return /* () */0;
   }
@@ -181,10 +175,9 @@ function Game(Props) {
 var make = Game;
 
 exports.handleShipHit = handleShipHit;
-exports.isGameOver = isGameOver;
-exports.aiTakeTurn = aiTakeTurn;
 exports.shoot = shoot;
 exports.takeTurn = takeTurn;
+exports.aiTakeTurn = aiTakeTurn;
 exports.onTileClickHandler = onTileClickHandler;
 exports.make = make;
 /*  Not a pure module */

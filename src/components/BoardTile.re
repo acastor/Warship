@@ -14,7 +14,7 @@ let getTileContents = (tile: boardTileState, ~boardOwner: player) =>
 let make = (~x: string, ~y: string, ~boardOwner: player, ~onTileClick) => {
   let gameState = React.useContext(AppContext.boardContext);
   let partialGetEmojiForTile = getTileContents(~boardOwner);
-  let click = event => {
+  let click = _ => {
     onTileClick(
       ~gameState,
       ~x=int_of_string(x),

@@ -5,20 +5,12 @@ var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var SharedTypes$ReactHooksTemplate = require("./SharedTypes.bs.js");
 
 function isLegalPlacement(board, x, y, direction, shipLength) {
-  var validPlacement = /* record */[/* contents */false];
-  if (direction === SharedTypes$ReactHooksTemplate.directionVertical) {
-    validPlacement[0] = (x + shipLength | 0) <= SharedTypes$ReactHooksTemplate.boardSize;
-  } else {
-    validPlacement[0] = (y + shipLength | 0) <= SharedTypes$ReactHooksTemplate.boardSize;
-  }
-  if (validPlacement[0]) {
+  var validPlacement = false;
+  validPlacement = direction === SharedTypes$ReactHooksTemplate.directionVertical ? (x + shipLength | 0) <= SharedTypes$ReactHooksTemplate.boardSize : (y + shipLength | 0) <= SharedTypes$ReactHooksTemplate.boardSize;
+  if (validPlacement) {
     for(var index = 0 ,index_finish = shipLength - 1 | 0; index <= index_finish; ++index){
-      if (validPlacement[0]) {
-        if (direction === SharedTypes$ReactHooksTemplate.directionVertical) {
-          validPlacement[0] = Caml_array.caml_array_get(Caml_array.caml_array_get(board, x + index | 0), y) === /* Empty */0;
-        } else {
-          validPlacement[0] = Caml_array.caml_array_get(Caml_array.caml_array_get(board, x), y + index | 0) === /* Empty */0;
-        }
+      if (validPlacement) {
+        validPlacement = direction === SharedTypes$ReactHooksTemplate.directionVertical ? Caml_array.caml_array_get(Caml_array.caml_array_get(board, x + index | 0), y) !== /* Ship */1 : Caml_array.caml_array_get(Caml_array.caml_array_get(board, x), y + index | 0) !== /* Ship */1;
       }
       
     }
@@ -26,5 +18,27 @@ function isLegalPlacement(board, x, y, direction, shipLength) {
   return validPlacement;
 }
 
+function getCoordinatesForShip(ship, x, y, direction) {
+  var shipCoordinatesArr = Caml_array.caml_make_vect(ship[/* shipLength */3], /* tuple */[
+        -1,
+        -1
+      ]);
+  for(var index = 0 ,index_finish = ship[/* shipLength */3] - 1 | 0; index <= index_finish; ++index){
+    if (direction === SharedTypes$ReactHooksTemplate.directionVertical) {
+      Caml_array.caml_array_set(shipCoordinatesArr, index, /* tuple */[
+            x + index | 0,
+            y
+          ]);
+    } else {
+      Caml_array.caml_array_set(shipCoordinatesArr, index, /* tuple */[
+            x,
+            y + index | 0
+          ]);
+    }
+  }
+  return shipCoordinatesArr;
+}
+
 exports.isLegalPlacement = isLegalPlacement;
+exports.getCoordinatesForShip = getCoordinatesForShip;
 /* No side effect */

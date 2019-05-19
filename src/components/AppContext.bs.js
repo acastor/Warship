@@ -79,12 +79,18 @@ function buildFleet(param) {
         ];
 }
 
+function updateBoardWithShipCoordinates(board, ship) {
+  return $$Array.map((function (param) {
+                return Caml_array.caml_array_set(Caml_array.caml_array_get(board, param[0]), param[1], /* Ship */1);
+              }), ship[/* coordinates */4]);
+}
+
 function randomlyPlaceShips(board, fleet) {
   return List.map((function (ship) {
                 var randomX = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                 var randomY = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                 var randomDirection = Js_math.floor(2 * Math.random());
-                while(!Util$ReactHooksTemplate.isLegalPlacement(board, randomX, randomY, randomDirection, ship[/* shipLength */3])[0]) {
+                while(!Util$ReactHooksTemplate.isLegalPlacement(board, randomX, randomY, randomDirection, ship[/* shipLength */3])) {
                   randomX = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                   randomY = Js_math.floor(SharedTypes$ReactHooksTemplate.boardSize * Math.random());
                   randomDirection = Js_math.floor(2 * Math.random());
@@ -92,22 +98,8 @@ function randomlyPlaceShips(board, fleet) {
                 var x = randomX;
                 var y = randomY;
                 var direction = randomDirection;
-                for(var index = 0 ,index_finish = ship[/* shipLength */3] - 1 | 0; index <= index_finish; ++index){
-                  if (direction === SharedTypes$ReactHooksTemplate.directionVertical) {
-                    Caml_array.caml_array_set(Caml_array.caml_array_get(board, x + index | 0), y, /* Ship */1);
-                    Caml_array.caml_array_set(ship[/* coordinates */4], index, /* tuple */[
-                          x + index | 0,
-                          y
-                        ]);
-                  } else {
-                    Caml_array.caml_array_set(Caml_array.caml_array_get(board, x), y + index | 0, /* Ship */1);
-                    Caml_array.caml_array_set(ship[/* coordinates */4], index, /* tuple */[
-                          x,
-                          y + index | 0
-                        ]);
-                  }
-                }
-                return /* () */0;
+                ship[/* coordinates */4] = Util$ReactHooksTemplate.getCoordinatesForShip(ship, x, y, direction);
+                return updateBoardWithShipCoordinates(board, ship);
               }), fleet);
 }
 
@@ -144,6 +136,7 @@ var BoardProvider = /* module */[
 ];
 
 exports.buildFleet = buildFleet;
+exports.updateBoardWithShipCoordinates = updateBoardWithShipCoordinates;
 exports.randomlyPlaceShips = randomlyPlaceShips;
 exports.initialState = initialState;
 exports.boardContext = boardContext;

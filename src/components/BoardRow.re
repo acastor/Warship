@@ -11,7 +11,7 @@ let make = (~index: int, ~boardOwner: player, ~onTileClick) => {
 
   <div className="board-row">
     {board[index]
-     |> Array.mapi((ind: int, tile: boardTileState) =>
+     |> Array.mapi((ind: int, _) =>
           <BoardTile
             key={string_of_int(index) ++ string_of_int(ind)}
             x={string_of_int(index)}

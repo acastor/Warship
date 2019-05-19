@@ -1,6 +1,6 @@
 open SharedTypes;
 
-let getBoardNameClass = (~boardOwner: player) => {
+let getBoardNameClass = (boardOwner: player) => {
   let owner =
     switch (boardOwner) {
     | Human => "player"
@@ -33,7 +33,7 @@ let make = (~boardOwner: player, ~onTileClick) => {
     </h2>
     <div className={getBoardNameClass(boardOwner)}>
       {board
-       |> Array.mapi((index: int, row: row) =>
+       |> Array.mapi((index: int, _) =>
             <BoardRow
               key={string_of_int(index)}
               index

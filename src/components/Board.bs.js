@@ -22,7 +22,7 @@ function Board(Props) {
                   className: "board-title"
                 }, boardOwner ? "Enemy" : "You"), React.createElement("div", {
                   className: getBoardNameClass(boardOwner)
-                }, $$Array.mapi((function (index, row) {
+                }, $$Array.mapi((function (index, param) {
                         return React.createElement(BoardRow$ReactHooksTemplate.make, {
                                     index: index,
                                     boardOwner: boardOwner,

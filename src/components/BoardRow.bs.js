@@ -15,7 +15,7 @@ function BoardRow(Props) {
   var board = boardOwner ? gameState[/* aiBoard */2] : gameState[/* humanBoard */0];
   return React.createElement("div", {
               className: "board-row"
-            }, $$Array.mapi((function (ind, tile) {
+            }, $$Array.mapi((function (ind, param) {
                     return React.createElement(BoardTile$ReactHooksTemplate.make, {
                                 x: String(index),
                                 y: String(ind),

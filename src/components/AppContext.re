@@ -41,7 +41,11 @@ let buildFleet = () => {
   [carrier, battleship, submarine, destroyer, patrolBoat];
 };
 
-let randomlyPlaceShips = (~board, fleet: fleet) => {
+let updateBoardWithShipCoordinates = (board: board, ship: ship) => {
+  Array.map(((x, y)) => board[x][y] = Ship, ship.coordinates);
+};
+
+let randomlyPlaceShips = (board: board, fleet: fleet) => {
   // iterate through every ship
   List.map(
     ship => {
@@ -53,16 +57,13 @@ let randomlyPlaceShips = (~board, fleet: fleet) => {
       let randomDirection =
         ref(Js.Math.floor(float_of_int(2) *. Js.Math.random()));
       while (!
-               (
-                 isLegalPlacement(
-                   board,
-                   randomX^,
-                   randomY^,
-                   randomDirection^,
-                   ship.shipLength,
-                 )
-               )
-                 ^) {
+               isLegalPlacement(
+                 board,
+                 randomX^,
+                 randomY^,
+                 randomDirection^,
+                 ship.shipLength,
+               )) {
         randomX := Js.Math.floor(float_of_int(boardSize) *. Js.Math.random());
         randomY := Js.Math.floor(float_of_int(boardSize) *. Js.Math.random());
         randomDirection := Js.Math.floor(float_of_int(2) *. Js.Math.random());
@@ -71,16 +72,10 @@ let randomlyPlaceShips = (~board, fleet: fleet) => {
       let y = randomY^;
       let direction = randomDirection^;
 
-      // update the board state and save the coordinates on the ship instance
-      for (index in 0 to ship.shipLength - 1) {
-        if (direction == directionVertical) {
-          board[x + index][y] = Ship;
-          ship.coordinates[index] = (x + index, y);
-        } else {
-          board[x][y + index] = Ship;
-          ship.coordinates[index] = (x, y + index);
-        };
-      };
+      // get the ship coordinates starting at this position
+      // save the coordinates on the ship and update the board
+      ship.coordinates = getCoordinatesForShip(ship, x, y, direction);
+      updateBoardWithShipCoordinates(board, ship);
     },
     fleet,
   );
@@ -91,8 +86,8 @@ let initialState = () => {
   let aiFleet = buildFleet();
   let humanBoard = Array.make_matrix(boardSize, boardSize, Empty);
   let aiBoard = Array.make_matrix(boardSize, boardSize, Empty);
-  randomlyPlaceShips(humanBoard, humanFleet);
-  randomlyPlaceShips(aiBoard, aiFleet);
+  ignore(randomlyPlaceShips(humanBoard, humanFleet));
+  ignore(randomlyPlaceShips(aiBoard, aiFleet));
   {humanBoard, humanFleet, aiBoard, aiFleet, turnState: Playing(Human)};
 };
 
