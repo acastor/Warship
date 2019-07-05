@@ -9,6 +9,7 @@ var React = require("react");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var AI$ReactHooksTemplate = require("./AI.bs.js");
 var Board$ReactHooksTemplate = require("./components/Board.bs.js");
+var GameOver$ReactHooksTemplate = require("./components/GameOver.bs.js");
 var AppContext$ReactHooksTemplate = require("./components/AppContext.bs.js");
 
 ((require('./game.css')));
@@ -156,10 +157,11 @@ function Game(Props) {
   };
   var match$1 = gameState[/* turnState */4];
   var tmp;
-  tmp = match$1.tag ? (
-      match$1[0] ? React.createElement("h1", undefined, "YOU LOST!") : React.createElement("h1", undefined, "YOU WON!")
-    ) : React.createElement("div", undefined, React.createElement("h2", {
-              className: "board-title"
+  tmp = match$1.tag ? React.createElement(GameOver$ReactHooksTemplate.make, {
+          turnState: gameState[/* turnState */4],
+          setGameState: setGameState
+        }) : React.createElement("div", undefined, React.createElement("h2", {
+              className: "title-color board-title"
             }, "Warship"), React.createElement(AppContext$ReactHooksTemplate.BoardProvider[/* make */1], AppContext$ReactHooksTemplate.BoardProvider[/* makeProps */0](gameState, null, /* () */0), React.createElement(Board$ReactHooksTemplate.make, {
                   boardOwner: /* Human */0,
                   onTileClick: partialOnTileClickHandler

@@ -114,14 +114,13 @@ let make = () => {
     {switch (gameState.turnState) {
      | Playing(_) =>
        <div>
-         <h2 className="board-title"> {ReasonReact.string("Warship")} </h2>
+         <h2 className="title-color board-title"> {ReasonReact.string("Warship")} </h2>
          <AppContext.BoardProvider value=gameState>
            <Board boardOwner=Human onTileClick=partialOnTileClickHandler />
            <Board boardOwner=AI onTileClick=partialOnTileClickHandler />
          </AppContext.BoardProvider>
        </div>
-     | Winner(Human) => <h1> {ReasonReact.string("YOU WON!")} </h1>
-     | Winner(AI) => <h1> {ReasonReact.string("YOU LOST!")} </h1>
+     | Winner(_) => <GameOver turnState=gameState.turnState setGameState></GameOver>
      }}
   </div>;
 };
