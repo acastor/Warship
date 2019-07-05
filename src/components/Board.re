@@ -18,7 +18,7 @@ let make = (~boardOwner: player, ~onTileClick) => {
     | AI => gameState.aiBoard
     };
   <div className="board-container">
-    <h2 className="board-title">
+    <h2 className="title-color">
       {boardOwner
        |> (
          owner =>

@@ -19,7 +19,7 @@ function Board(Props) {
   return React.createElement("div", {
               className: "board-container"
             }, React.createElement("h2", {
-                  className: "board-title"
+                  className: "title-color"
                 }, boardOwner ? "Enemy" : "You"), React.createElement("div", {
                   className: getBoardNameClass(boardOwner)
                 }, $$Array.mapi((function (index, param) {
