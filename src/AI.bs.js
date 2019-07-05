@@ -207,10 +207,7 @@ function aiShoot(humanFleet, humanBoard) {
                       }), columnArr);
         }), probabilityGrid);
   var match = target[0];
-  var y = match[1];
-  var x = match[0];
-  console.log("The guess is (" + (String(x) + (", " + (String(y) + ")"))));
-  updateAIVirtualBoard(humanBoard, x, y);
+  updateAIVirtualBoard(humanBoard, match[0], match[1]);
   return target[0];
 }
 

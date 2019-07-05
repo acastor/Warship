@@ -163,11 +163,8 @@ let aiShoot = (humanFleet: fleet, humanBoard: board) => {
       ),
     probabilityGrid,
   ));
+  
   let (x, y) = target^;
-  Js.log(
-    "The guess is (" ++ string_of_int(x) ++ ", " ++ string_of_int(y) ++ ")",
-  );
-
   updateAIVirtualBoard(humanBoard, ~x, ~y);
   target^;
 };
